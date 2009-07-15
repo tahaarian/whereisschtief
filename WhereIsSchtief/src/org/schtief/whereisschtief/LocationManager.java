@@ -10,7 +10,7 @@ public class LocationManager
 	@SuppressWarnings("unchecked")
 	public static List<Location> getLocations(PersistenceManager pm, String name)
 	{
-		String jdoql = "select from " + Location.class.getName()+" order by time DESC";
+		String jdoql = "SELECT FROM " + Location.class.getName()+" ORDER BY time DESC";
 		return (List<Location>) pm.newQuery(jdoql).execute();
 	}
 
