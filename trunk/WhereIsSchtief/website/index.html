@@ -21,42 +21,34 @@ function load() {
 	map.addControl(new GSmallMapControl());
 	map.addControl(new GMapTypeControl()); 
 
-	latestPos=null;
-	var setCenter=false;
+	update();
+}
+
+function update(){
+latestPos=null;
 	for (var i = 0; i < entries.length; i++) {
 		try{
 			var entry = entries[i];
 			var title = entry['date'];
-			//var start =  entry['gsx$date'].$t;	
-			//var status =  entry['gsx$status'].$t;	
 			var lon =  entry['latitude'];	
 			var lat =  entry['longitude'];
-			//if(status=='update' && ''!=lat && ''!=lon){
 				lat=lat;
 				lon=lon;
 				if(null==latestPos){
-					if(false==setCenter){
-						map.setCenter(new GLatLng(lat, lon), 15);
-						setCenter=true;
-					}
-				}else{
+					map.setCenter(new GLatLng(lat, lon), 15);
+					setCenter=true;
+				}
+				else{
 					var polyline = new GPolyline([latestPos,new GLatLng(lat, lon)], "#aa0000", 5);
 					map.addOverlay(polyline);
 				}
 				latestPos = new GLatLng(lat, lon);
 				map.addOverlay(createMarker(latestPos, title));  
-//			}else{
-//				latestPos=null;
-//			}
+
 		}catch(e){
 			error += e.name+" : "+ e.message;
 			document.getElementById("error").innerHTML =error;
 		}
-
-	}
-	
-	if(false==setCenter){
-		map.setCenter(new GLatLng(52.519227, 13.318927), 10);
 	}
 }
 
@@ -76,9 +68,9 @@ function listLocations(root) {
   <body onload="load()" onunload="GUnload()">
   
   <center>
-  <h1>Where is Schtief</h1> 
-    <div id="map" style="width:700px;height:400px"></div>
-  <div id="status"></div> 
+  <h1>Where is Schtief!</h1> 
+  	<a href="http://schteif.blogspot.com">Schtiefs Blog</a><br/>
+  <div id="map" style="width:700px;height:400px"></div>
   <div id="error"></div> 
   </center>
   
