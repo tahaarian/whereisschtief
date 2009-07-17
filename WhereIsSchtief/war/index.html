@@ -1,33 +1,98 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<!-- The HTML 4.01 Transitional DOCTYPE declaration-->
-<!-- above set at the top of the file will set     -->
-<!-- the browser's rendering engine into           -->
-<!-- "Quirks Mode". Replacing this declaration     -->
-<!-- with a "Standards Mode" doctype is supported, -->
-<!-- but may lead to some differences in layout.   -->
-
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-    <title>Hello App Engine</title>
-  </head>
-
-  <body>
-    <h1>Hello App Engine!</h1>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title>Where is Schtief</title>
+    <script src="prototype.js" type="text/javascript"></script>
+    <script src="calendar_date_select.js" type="text/javascript"></script>
+    <script src="format_finnish.js" type="text/javascript"></script>
+	<link href="silver.css" media="screen" rel="stylesheet" type="text/css" />
 	
-    <table>
-      <tr>
-        <td colspan="2" style="font-weight:bold;">Available Servlets:</td>        
-      </tr>
-      <tr>
-        <td><a href="/update"/>Update</td>
-      </tr>
-      <tr>
-        <td><form action="/whereisschtief"><input type="hidden" name="action" value="adduser"/><input type="text" name="name"/><input type="text" name="jsonurl"/><input type="submit" value="add User"/></form></td>
-      </tr>
-      <tr>
-        <td><a href="/whereisschtief?action=getdata"/>Get Data</td>
-      </tr>
-    </table>
+    <script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=ABQIAAAAd1mTWhhIf0BDdkWVS78vshQ8O2Rrwn_syHWXxA1_wLHAaTolExSVr1TGtIN58GjZWjW31betl2bmZw"
+      type="text/javascript"></script>
+    <script type="text/javascript">
+var map;
+var latestPos;
+var entries;
+var error="";
+function load() {
+	if (!GBrowserIsCompatible()) {
+		document.getElementById("error").innerHTML = "Not compatible!";
+		return;
+	}
+
+	map = new GMap2(document.getElementById("map"));
+	map.addControl(new GSmallMapControl());
+	map.addControl(new GMapTypeControl()); 
+
+	update();
+}
+
+function update(){
+	map.clearOverlays();
+	latestPos=null;
+	for (var i = 0; i < entries.length; i++) {
+		try{
+			var entry = entries[i];
+			var title = entry['date'];
+			var lon =  entry['latitude'];	
+			var lat =  entry['longitude'];
+				lat=lat;
+				lon=lon;
+				if(null==latestPos){
+					map.setCenter(new GLatLng(lat, lon), 15);
+					setCenter=true;
+				}
+				else{
+					var polyline = new GPolyline([latestPos,new GLatLng(lat, lon)], "#aa0000", 5);
+					map.addOverlay(polyline);
+				}
+				latestPos = new GLatLng(lat, lon);
+				map.addOverlay(createMarker(latestPos, title));  
+
+		}catch(e){
+			error += e.name+" : "+ e.message;
+			document.getElementById("error").innerHTML =error;
+		}
+	}
+}
+
+function createMarker(point, name) {
+	var marker = new GMarker(point);
+	GEvent.addListener(marker, "mouseover", function() {
+		marker.openInfoWindowHtml("<b> " + name + " </b>");
+	});    
+  return marker;
+}
+
+function setDate(){
+	new Ajax.Request('/whereisschtief', {
+	  method: 'get',
+	  parameters: {action: 'getdata', callback: 'updateLocations', date: document.forms[0].date.value}
+	  });
+}
+   
+function updateLocations(root){
+	entries = root.locations || [];
+	update();
+} 
+    
+function listLocations(root) {
+	entries = root.locations || [];
+}
+    </script>
+  </head>
+  <body onload="load()" onunload="GUnload()">
+  <center>
+  <h1>Where is Schtief!</h1> 
+  <a href="http://www.twitter.com/mrschtief">Schtiefs Twitter</a>, <a href="http://schteif.blogspot.com">Schtiefs Blog</a>, <a href="http://www.flickr.com/photos/lischke">Schtiefs Flickr</a> <br/><br/>
+  <form><b>Where was Schtief on:</b><input id="date" name="date" type="text" value="" onChange="setDate()" /> <img alt="Calendar" onclick="new CalendarDateSelect( $(this).previous(), {year_range:10} );" src="calendar.gif" style="border:0px; cursor:pointer;" /></form>
+  <div id="map" style="width:700px;height:400px"></div>
+  <div id="error"></div> 
+  </center>
+  
+<script src="/whereisschtief?action=getdata&callback=listLocations">
+</script>
   </body>
 </html>

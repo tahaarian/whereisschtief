@@ -1,6 +1,10 @@
 package org.schtief.whereisschtief;
 
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 
@@ -21,6 +25,7 @@ public class WhereIsSchtiefServlet extends HttpServlet {
 	private static final String ACTION_ADD_USER		=	"adduser";
 	private static final String ACTION_GET_DATA		=	"getdata";
 	private static final String PARAMETER_NAME 		= 	"name";
+	private static final String PARAMETER_DATE 		= 	"date";
 	private static final String PARAMETER_CALLBACK	= 	"callback";
 	private static final String PARAMETER_JSON_URL 	= 	"jsonurl";
 	
@@ -51,15 +56,34 @@ public class WhereIsSchtiefServlet extends HttpServlet {
 		//optional name
 		String name	=	req.getParameter(PARAMETER_NAME);
 	
-		//TODO start date
-		//TODO end date
-		//TODO maxnumbers
+		String dateS	=	req.getParameter(PARAMETER_DATE);
+
+		Calendar cal=Calendar.getInstance();
+		//TODO check german timezone
+		cal.add(Calendar.HOUR, -10);
+		if(null!=dateS)
+		{
+			try
+			{
+				//TODO try catch logging
+				//parse to calendar
+				DateFormat formatter = new SimpleDateFormat("dd.MM.yy");
+				Date     date = (Date)formatter.parse(dateS); 
+				cal.setTime(date);
+			}
+			catch(Exception e)
+			{
+				throw new RuntimeException("Parse Date error "+dateS,e);
+			}
+		}
+
 		//callback
 		String callback	=	req.getParameter(PARAMETER_CALLBACK);
 		PersistenceManager pm = PMF.get().getPersistenceManager();
 
-		List<Location> locations	=	LocationManager.getLocations(pm,name);
-		//write json
+		List<Location> locations	=	LocationManager.getLocations(pm,name,cal);
+		//write javascript+json
+		resp.setContentType("text/javascript");
 		resp.getWriter().append(callback+"(");
 		JSONWriter writer = new JSONWriter(resp.getWriter());
 		
