@@ -58,9 +58,10 @@ public class WhereIsSchtiefServlet extends HttpServlet {
 	
 		String dateS	=	req.getParameter(PARAMETER_DATE);
 
-		Calendar cal=Calendar.getInstance();
-		//TODO check german timezone
-		cal.add(Calendar.HOUR, -10);
+		Calendar startCal=Calendar.getInstance();
+		//By Default -1 Day
+		startCal.add(Calendar.DATE, -1);
+		Calendar endCal=Calendar.getInstance();
 		if(null!=dateS)
 		{
 			try
@@ -69,19 +70,30 @@ public class WhereIsSchtiefServlet extends HttpServlet {
 				//parse to calendar
 				DateFormat formatter = new SimpleDateFormat("dd.MM.yy");
 				Date     date = (Date)formatter.parse(dateS); 
-				cal.setTime(date);
+				startCal.setTime(date);
+				endCal.setTime(date);
 			}
 			catch(Exception e)
 			{
 				throw new RuntimeException("Parse Date error "+dateS,e);
 			}
 		}
+		// 00:00
+		startCal.set(Calendar.HOUR, 0);
+		startCal.set(Calendar.MINUTE, 0);
+		startCal.set(Calendar.SECOND, 0);
+		
+		//By Default 23:59
+		endCal.set(Calendar.HOUR, 23);
+		endCal.set(Calendar.MINUTE, 59);
+		endCal.set(Calendar.SECOND, 59);
 
+		
 		//callback
 		String callback	=	req.getParameter(PARAMETER_CALLBACK);
 		PersistenceManager pm = PMF.get().getPersistenceManager();
 
-		List<Location> locations	=	LocationManager.getLocations(pm,name,cal);
+		List<Location> locations	=	LocationManager.getLocations(pm,name,startCal,endCal);
 		//write javascript+json
 		resp.setContentType("text/javascript");
 		resp.getWriter().append(callback+"(");
