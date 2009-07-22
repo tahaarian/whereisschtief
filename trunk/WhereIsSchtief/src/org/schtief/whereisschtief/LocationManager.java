@@ -9,17 +9,15 @@ public class LocationManager
 {
 
 	@SuppressWarnings("unchecked")
-	public static List<Location> getLocations(PersistenceManager pm, String name, Calendar date)
+	public static List<Location> getLocations(PersistenceManager pm, String name, Calendar fromDate, Calendar toDate)
 	{
-		date.set(Calendar.HOUR, 0);
-		date.set(Calendar.MINUTE, 0);
-		date.set(Calendar.SECOND, 0);
-		long startTimeStamp	=	date.getTimeInMillis();
+
+		long startTimeStamp	=	fromDate.getTimeInMillis();
 		
-		date.set(Calendar.HOUR, 23);
-		date.set(Calendar.MINUTE, 59);
-		date.set(Calendar.SECOND, 59);
-		long endTimeStamp	=	date.getTimeInMillis();
+//		date.set(Calendar.HOUR, 23);
+//		date.set(Calendar.MINUTE, 59);
+//		date.set(Calendar.SECOND, 59);
+		long endTimeStamp	=	toDate.getTimeInMillis();
 		
 
 		String jdoql = "SELECT FROM " + Location.class.getName()+" WHERE time >= "+startTimeStamp+" && time <= "+endTimeStamp+" ORDER BY time DESC";
