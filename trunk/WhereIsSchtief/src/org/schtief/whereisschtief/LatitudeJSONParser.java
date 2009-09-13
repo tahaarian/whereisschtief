@@ -46,12 +46,11 @@ public class LatitudeJSONParser {
 			log(Level.FINEST, coordinates.getDouble(0));
 			log(Level.FINEST, coordinates.getDouble(1));
 			
-			//TODO accuracy
 			JSONObject properties = (JSONObject)feature.get("properties");
 			log(Level.FINEST, properties.getLong("timeStamp"));
-			log(Level.FINEST, properties.getLong("accuracyInMeters"));
+			log(Level.FINEST, properties.get("accuracyInMeters"));
 
-			Location location = new Location(properties.getLong("timeStamp")*1000,Double.toString(coordinates.getDouble(0)),Double.toString(coordinates.getDouble(1)));
+			Location location = new Location(properties.getLong("timeStamp")*1000,Double.toString(coordinates.getDouble(0)),Double.toString(coordinates.getDouble(1)),properties.getInt("accuracyInMeters"));
 			return location;
 		} catch (IOException ioe) {
 			throw new LatitudeJSONParserException("Could not connect to url "

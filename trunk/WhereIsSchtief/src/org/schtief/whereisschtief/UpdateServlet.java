@@ -32,8 +32,11 @@ public class UpdateServlet extends HttpServlet {
         		if(null!=lastLocations && lastLocations.size()==1)
         		{
         			resp.getWriter().println("LastLocation " +lastLocations.get(0).toString());
+        			resp.getWriter().println("Location " +location.toString());
         			if(! lastLocations.get(0).getLatitude().equals(location.getLatitude()) || 
-        				! lastLocations.get(0).getLongitude().equals(location.getLongitude()))
+        				! lastLocations.get(0).getLongitude().equals(location.getLongitude()) ||
+        				(lastLocations.get(0).getAccuracy()==null || 
+        						lastLocations.get(0).getAccuracy()<location.getAccuracy()))
         			{
                     	pm.makePersistent(location);
                     	resp.getWriter().println("added");

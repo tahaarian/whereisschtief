@@ -1,9 +1,11 @@
 package org.schtief.whereisschtief;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
+import javax.jdo.annotations.NotPersistent;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
@@ -13,6 +15,10 @@ import org.json.JSONWriter;
 
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
 public class Location {
+	
+	@NotPersistent
+	protected static SimpleDateFormat df	=	new SimpleDateFormat("dd MMM yyyy HH:mm");
+ 	
 	@PrimaryKey
 	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
 	private Long id;
@@ -22,19 +28,29 @@ public class Location {
 	
 	@Persistent
 	private String latitude;
-	
+
+	@NotPersistent
 	private Double dLatitude;
 	
 	@Persistent
 	private String longitude;
 
+	@NotPersistent
 	private Double dLongitude;
 
-	public Location( Long time, String latitude, String longitude) {
+	@Persistent
+	private Integer accuracy;
+	
+	@NotPersistent
+	protected String type;
+	
+
+	public Location( long time, String latitude, String longitude, int accuracy) {
 		super();
 		this.time = time;
 		this.latitude = latitude;
 		this.longitude = longitude;
+		this.accuracy	=	accuracy;
 	}
 	
 	protected Location() {
@@ -76,24 +92,39 @@ public class Location {
 		return dLatitude;
 	}
 
+	public Integer getAccuracy() {
+		return accuracy;
+	}
+
 
 	@Override
 	public String toString() {
-		return "Id: "+getId()+", Time: "+getTime()+", Lat: "+latitude+", Long: "+longitude;
+		return "Id: "+getId()+", Time: "+getTime()+", Lat: "+latitude+", Long: "+longitude+", Accuracy: "+accuracy;
 	}
 	public String toCSV() {
 		return getId()+","+getTime()+","+latitude+","+longitude;
 	}
 
-	@SuppressWarnings("deprecation")
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+	
 	public void toJSON(JSONWriter writer) throws JSONException {
-		writer.key("id");
-		writer.value(id);
-		writer.key("date");
+		writer.key("type");
+		if(null==type)
+			writer.value("location");
+		else
+			writer.value(type);
+
+		writer.key("info");
 		Calendar cal=Calendar.getInstance();
 		cal.setTimeInMillis(time);
 		cal.add(Calendar.HOUR, 2);
-		writer.value(cal.getTime().toGMTString());
+		writer.value(df.format(cal.getTime()));
 		
 		writer.key("latitude");
 		if(null!=latitude)

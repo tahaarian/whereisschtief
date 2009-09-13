@@ -109,10 +109,15 @@ public class WhereIsSchtiefServlet extends HttpServlet {
 		PersistenceManager pm = PMF.get().getPersistenceManager();
 
 		List<Location> locations	=	LocationManager.getClusteredLocations(pm,name,startCal,endCal, 1000, 60);
+		if(null==locations || locations.size()==0)
+			return;
 		//write javascript+json
 		resp.setContentType("text/javascript");
 		resp.getWriter().append(callback+"(");
 		JSONWriter writer = new JSONWriter(resp.getWriter());
+		
+		if(endCal.after(Calendar.getInstance()))
+			locations.get(locations.size()-1).setType("actual");
 		
 		try
 		{

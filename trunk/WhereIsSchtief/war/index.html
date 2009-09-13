@@ -35,7 +35,8 @@ function update(){
 	for (var i = 0; i < entries.length; i++) {
 		try{
 			var entry = entries[i];
-			var title = entry['date'];
+			var info = entry['info'];
+			var type = entry['type'];
 			var lon =  entry['latitude'];	
 			var lat =  entry['longitude'];
 				if(null==latestPos){
@@ -46,8 +47,7 @@ function update(){
 					map.addOverlay(polyline);
 				}
 				latestPos = new GLatLng(lat, lon);
-				map.addOverlay(createMarker(latestPos, title));  
-
+				map.addOverlay(createMarker(latestPos, info, type, i));  
 		}catch(e){
 			error += e.name+" : "+ e.message;
 			document.getElementById("error").innerHTML =error;
@@ -56,14 +56,30 @@ function update(){
 	}
 }
 
-function createMarker(point, name) {
-	var marker = new GMarker(point);
+function createMarker(point, info, type, id ) {
+	id=id+1;
+	var icon;
+
+	if(type=="location")
+		icon = new GIcon(G_DEFAULT_ICON,"http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld="+id+"|ff2222|000000"); 
+
+	if(type=="cluster")
+		icon = new GIcon(G_DEFAULT_ICON,"http://chart.apis.google.com/chart?chst=d_map_pin_icon&chld=home|FFFF00");
+
+	if(type=="actual")
+		icon = new GIcon(G_DEFAULT_ICON,"http://chart.apis.google.com/chart?chst=d_map_xpin_icon&chld=pin_star|home|00FFFF|FF0000");
+	
+	var marker = new GMarker(point, {icon:icon, zIndexProcess:orderOfCreation});
 	GEvent.addListener(marker, "mouseover", function() {
-		marker.openInfoWindowHtml("<b> " + name + " </b>");
+		marker.openInfoWindowHtml("<b>" + info + "</b>");
 	});    
-  return marker;
+  	return marker;
 }
 
+      function orderOfCreation(marker,b) { 
+        return 1; 
+      } 
+      
 function setDate(){
 	new Ajax.Request('/whereisschtief', {
 	  method: 'get',
@@ -84,23 +100,22 @@ function listLocations(root) {
   <body onload="load()" onunload="GUnload()">
   <center>
   <h1>Where is Schtief!</h1>
-  Ich mache meine <a href="http://www.vorratsdatenspeicherung.de/">Vorratsdatenspeicherung</a> lieber selber.<br/>
+  <a href="http://schteif.blogspot.com/2009/09/ich-mache-meine-vorratsdatenspeicherung.html">Ich mache meine Vorratsdatenspeicherung lieber selber.</a><br/>
   Hier findet ihr mein Bewegungsprofil der letzten 36 Stunden.<br/>
   Ueberhalb der Karte koennt ihr auch mein Bewegungsprofil eines bestimmten <br/>
   Tages innerhalb der letzten 3 Monate abrufen.<br/>
   <b>Dies ist eine Provokation um zu zeigen, was alles moeglich ist,<br/>
-  denn mein Handy ist immer ortbar</b><br/>
+  denn unsere Handys sind immer ortbar.</b><br/>
   <a href="http://www.twitter.com/mrschtief">Schtiefs Twitter</a>, <a href="http://schteif.blogspot.com">Schtiefs Blog</a>, <a href="http://www.flickr.com/photos/lischke">Schtiefs Flickr</a> <br/><br/>
   <form><b>Where was Schtief on:</b><input id="date" name="date" type="text" value="" onChange="setDate()" /> <img alt="Calendar" onclick="new CalendarDateSelect( $(this).previous(), {year_range:10} );" src="calendar.gif" style="border:0px; cursor:pointer;" /></form>
   <div id="map" style="width:600px;height:400px"></div>
   <div id="error"></div> 
-  Karte optimiert fuer mobilen Zugriff waehrend der Demo!
   </center>
   TODOS:<br/>
-  <ul><li>Clustering: Verweildauer an den Orten aufsummieren</li>
-  <li>Integration von Twitter/Flickr und meiner Anrufdaten</li>
-  <li>Ungewoehnliche Orte herausfilter und extra anzeigen.<br/>(Treffen mit Terroristen)</li>
-  <li>Multiusererweiterung</li>
+  <ul><li><strike>Clustering: Verweildauer an den Orten aufsummieren </strike></li>
+  <li>Integration von Twitter/Flickr und evtl. meiner Anrufdaten</li>
+  <li>Ungewoehnliche Orte herausfilter und extra anzeigen.<br/>(Treffen mit Terroristen/Urlaub in Pakistan)</li>
+  <li>Multiusererweiterung & Community :-)</li>
   </ul>
 
   
