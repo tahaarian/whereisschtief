@@ -24,7 +24,7 @@ function load() {
 
 	map = new GMap2(document.getElementById("map"));
 	map.addControl(new GSmallMapControl());
-	map.addControl(new GMapTypeControl()); 
+	//map.addControl(new GMapTypeControl()); 
 
 	update();
 }
@@ -38,11 +38,8 @@ function update(){
 			var title = entry['date'];
 			var lon =  entry['latitude'];	
 			var lat =  entry['longitude'];
-				lat=lat;
-				lon=lon;
 				if(null==latestPos){
-					map.setCenter(new GLatLng(lat, lon), 15);
-					setCenter=true;
+
 				}
 				else{
 					var polyline = new GPolyline([latestPos,new GLatLng(lat, lon)], "#aa0000", 5);
@@ -55,6 +52,7 @@ function update(){
 			error += e.name+" : "+ e.message;
 			document.getElementById("error").innerHTML =error;
 		}
+		map.setCenter(latestPos, 14);
 	}
 }
 
@@ -85,12 +83,26 @@ function listLocations(root) {
   </head>
   <body onload="load()" onunload="GUnload()">
   <center>
-  <h1>Where is Schtief!</h1> 
+  <h1>Where is Schtief!</h1>
+  Ich mache meine <a href="http://www.vorratsdatenspeicherung.de/">Vorratsdatenspeicherung</a> lieber selber.<br/>
+  Hier findet ihr mein Bewegungsprofil der letzten 36 Stunden.<br/>
+  Ueberhalb der Karte koennt ihr auch mein Bewegungsprofil eines bestimmten <br/>
+  Tages innerhalb der letzten 3 Monate abrufen.<br/>
+  <b>Dies ist eine Provokation um zu zeigen, was alles moeglich ist,<br/>
+  denn mein Handy ist immer ortbar</b><br/>
   <a href="http://www.twitter.com/mrschtief">Schtiefs Twitter</a>, <a href="http://schteif.blogspot.com">Schtiefs Blog</a>, <a href="http://www.flickr.com/photos/lischke">Schtiefs Flickr</a> <br/><br/>
   <form><b>Where was Schtief on:</b><input id="date" name="date" type="text" value="" onChange="setDate()" /> <img alt="Calendar" onclick="new CalendarDateSelect( $(this).previous(), {year_range:10} );" src="calendar.gif" style="border:0px; cursor:pointer;" /></form>
-  <div id="map" style="width:700px;height:400px"></div>
+  <div id="map" style="width:600px;height:400px"></div>
   <div id="error"></div> 
+  Karte optimiert fuer mobilen Zugriff waehrend der Demo!
   </center>
+  TODOS:<br/>
+  <ul><li>Clustering: Verweildauer an den Orten aufsummieren</li>
+  <li>Integration von Twitter/Flickr und meiner Anrufdaten</li>
+  <li>Ungewoehnliche Orte herausfilter und extra anzeigen.<br/>(Treffen mit Terroristen)</li>
+  <li>Multiusererweiterung</li>
+  </ul>
+
   
 <script src="/whereisschtief?action=getdata&callback=listLocations">
 </script>

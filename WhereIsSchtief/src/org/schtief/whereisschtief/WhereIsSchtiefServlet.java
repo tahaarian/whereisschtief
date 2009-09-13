@@ -108,7 +108,7 @@ public class WhereIsSchtiefServlet extends HttpServlet {
 		String callback	=	req.getParameter(PARAMETER_CALLBACK);
 		PersistenceManager pm = PMF.get().getPersistenceManager();
 
-		List<Location> locations	=	LocationManager.getLocations(pm,name,startCal,endCal);
+		List<Location> locations	=	LocationManager.getClusteredLocations(pm,name,startCal,endCal, 1000, 60);
 		//write javascript+json
 		resp.setContentType("text/javascript");
 		resp.getWriter().append(callback+"(");
@@ -261,32 +261,14 @@ public class WhereIsSchtiefServlet extends HttpServlet {
 		
 		PersistenceManager pm = PMF.get().getPersistenceManager();
 
-		List<Location> locations	=	LocationManager.getLocations(pm,name,startCal,endCal);
+		List<Location> locations	=	LocationManager.getLocations(pm,name,null,null);
 		//write javascript+json
-		resp.setContentType("text/javascript");
-		resp.getWriter().append(callback+"(");
-		JSONWriter writer = new JSONWriter(resp.getWriter());
-		
-		try
-		{
-			writer.object();
-			writer.key("locations");
-			writer.array();
-			for (Location location : locations) {
-				writer.object();
-				location.toJSON(writer);
-				writer.endObject();
-			}
-			writer.endArray();
-			writer.endObject();
-			resp.getWriter().append(");");
+		resp.setContentType("text/plain");
+		for (Location location : locations) {
+			resp.getWriter().append(location.toCSV());
+			resp.getWriter().append("\n");
 		}
-		catch(JSONException je)
-		{
-			je.printStackTrace();
-			error(resp,"could not write JSON");
-		}
-		
+		resp.getWriter().flush();
 	}
 	
 	private void error(ServletResponse resp, String message) throws IOException {
