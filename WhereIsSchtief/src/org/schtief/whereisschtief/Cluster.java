@@ -48,9 +48,12 @@ public class Cluster extends Location {
 
 	@Override
 	public void toJSON(JSONWriter writer) throws JSONException {
-		writer.key("id");
-		writer.value(members.get(0).getId());
-		writer.key("date");
+		writer.key("type");
+		if(null==type)
+			writer.value("cluster");
+		else
+			writer.value(type);
+		writer.key("info");
 		
 		Calendar cal=Calendar.getInstance();
 		cal.setTimeInMillis(members.get(0).getTime());
@@ -77,7 +80,7 @@ public class Cluster extends Location {
 		else
 			durationS	=	duration+"mins";
 
-		writer.value(cal.getTime().toGMTString()+"<br/>"+(null==lastTime ?"till now":endCal.getTime().toGMTString()+"<br/>")+"="+durationS);
+		writer.value(df.format(cal.getTime())+"<br/>"+(null==lastTime ?"till now":df.format(endCal.getTime())+"<br/>")+"="+durationS);
 		
 		double latSum	=	0;
 		double lonSum	=	0;
