@@ -80,7 +80,10 @@ public class Cluster extends Location {
 		else
 			durationS	=	duration+"mins";
 
-		writer.value(df.format(cal.getTime())+"<br/>"+(null==lastTime ?"till now":df.format(endCal.getTime())+"<br/>")+"="+durationS);
+		if(info.length()>0)
+			writer.value(df.format(cal.getTime())+"<br/>"+(null==lastTime ?"till now":df.format(endCal.getTime())+"<br/>")+"="+durationS+"<br/>"+info);
+		else
+			writer.value(df.format(cal.getTime())+"<br/>"+(null==lastTime ?"till now":df.format(endCal.getTime())+"<br/>")+"="+durationS);
 		
 		double latSum	=	0;
 		double lonSum	=	0;

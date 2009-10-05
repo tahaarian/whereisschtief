@@ -5,6 +5,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 
@@ -17,6 +18,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.json.JSONException;
 import org.json.JSONWriter;
+import org.schtief.twitter.Tweet;
+import org.schtief.twitter.TweetManager;
 import org.schtief.whereisschtief.LatitudeJSONParser.LatitudeJSONParserException;
 
 @SuppressWarnings("serial")
@@ -110,7 +113,37 @@ public class WhereIsSchtiefServlet extends HttpServlet {
 		PersistenceManager pm = PMF.get().getPersistenceManager();
 
 		List<Location> locations	=	LocationManager.getClusteredLocations(pm,name,startCal,endCal, 1000, 60);
-
+		List<Tweet> tweets	=	TweetManager.getTweets(pm, null, startCal, endCal);
+		
+		if(locations.size()>0 && tweets.size()>0)
+		{
+			Iterator<Location> itL = locations.iterator();
+			Location lastLocation	=	itL.next();
+			Location location	=	null;
+			if(itL.hasNext())
+			{
+				location=itL.next();
+				for (Tweet tweet : tweets) {
+					//TODO use name in query with index
+					if(!name.equals(tweet.getUser()))
+						continue;
+					if(tweet.getTime()<lastLocation.getTime())
+						continue;
+					//wenn tweet after location next location
+					if(tweet.getTime()>location.getTime() && itL.hasNext())
+					{
+						lastLocation=location;
+						location=itL.next();
+						continue;
+					}
+					//naeheste Location zu diesem tweet finden
+					if(Math.abs(tweet.getTime()-lastLocation.getTime())<=Math.abs(tweet.getTime()-location.getTime()))
+						lastLocation.addTweet(tweet);
+					else
+						location.addTweet(tweet);
+				}
+			}
+		}		
 		//write javascript+json
 		resp.setContentType("text/javascript");
 		resp.getWriter().append(callback+"(");
@@ -279,12 +312,17 @@ public class WhereIsSchtiefServlet extends HttpServlet {
 			// Start the transaction
 		    tx.begin();
 			for (Location location : locations) {
-				if(null==location.getUser())
+				if("schtief".equals(location.getUser()))
 				{
-					System.out.println("user null "+location.toString());
-					location.setUser("schtief");
+					location.setUser("mrschtief");
 //					pm.makePersistent(location);
 				}
+				if("martin".equals(location.getUser()))
+				{
+					location.setUser("plomlompom");
+//					pm.makePersistent(location);
+				}
+
 			}
 		    tx.commit();
 		}catch(Exception e){
