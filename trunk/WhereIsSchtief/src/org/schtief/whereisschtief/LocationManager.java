@@ -14,9 +14,12 @@ public class LocationManager
 	{
 		StringBuffer jdoql	=	new StringBuffer("SELECT FROM ");
 		jdoql.append(Location.class.getName());
-		if(null!=fromDate || null!= toDate)
+		if(null!=fromDate || null!= toDate || null!=name)
 		{			
 			jdoql.append(" WHERE");
+		}
+		if(null!=fromDate || null!= toDate)
+		{			
 			if(null!=fromDate)
 			{
 				jdoql.append(" time >= ");
@@ -28,18 +31,33 @@ public class LocationManager
 				jdoql.append(toDate.getTimeInMillis());
 			}
 		}
-		//TODO name
+		if(null==name || name.length()==0)
+		{
+//			jdoql.append(" && user=='schtief' ");
+		}
+		else
+		{
+			if(null!=fromDate || null!= toDate)
+				jdoql.append(" && ");
+			jdoql.append(" user=='");			
+			jdoql.append(name);			
+			jdoql.append("' ");			
+		}
 		jdoql.append(" ORDER BY time ASC");
 
 //		String jdoql = "SELECT FROM " + Location.class.getName()+" WHERE time >= "+fromDate.getTimeInMillis()+" && time <= "+toDate.getTimeInMillis()+" ORDER BY time DESC";
-		System.out.println("HALLO "+jdoql);
+		System.out.println("JDOQL: "+jdoql);
 		return (List<Location>) pm.newQuery(jdoql.toString()).execute();
 	}
 
 	public static List<Location> getClusteredLocations(PersistenceManager pm, String name, Calendar fromDate, Calendar toDate, double thresholdRadius, int thresholdMinutes)
 	{
 		List<Location> locations	=	getLocations(pm, name, fromDate, toDate);
+		System.out.println("getClusteredLocations got locations : #"+locations.size());
 		List<Location> result		=	new ArrayList<Location>();
+		
+		if(null==locations || locations.size()==0)
+			return result;
 
 		Cluster cluster	=	null;
 		for (Location location : locations) 

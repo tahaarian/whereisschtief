@@ -63,7 +63,7 @@ public class LatitudeJSONParser {
 	private static void log(Level level, Object log) 
 	{
 		//TODO fucking logging in google app engine
-		System.out.println(log.toString());
+//		System.out.println(log.toString());
 	}
 
 	@SuppressWarnings("serial")

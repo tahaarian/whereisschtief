@@ -44,6 +44,9 @@ public class Location {
 	@NotPersistent
 	protected String type;
 	
+	@Persistent
+	private String user;
+
 
 	public Location( long time, String latitude, String longitude, int accuracy) {
 		super();
@@ -51,6 +54,7 @@ public class Location {
 		this.latitude = latitude;
 		this.longitude = longitude;
 		this.accuracy	=	accuracy;
+		this.user=null;
 	}
 	
 	protected Location() {
@@ -99,10 +103,10 @@ public class Location {
 
 	@Override
 	public String toString() {
-		return "Id: "+getId()+", Time: "+getTime()+", Lat: "+latitude+", Long: "+longitude+", Accuracy: "+accuracy;
+		return "User: "+user+" Id: "+getId()+", Time: "+getTime()+", Lat: "+latitude+", Long: "+longitude+", Accuracy: "+accuracy;
 	}
 	public String toCSV() {
-		return getId()+","+getTime()+","+latitude+","+longitude;
+		return getId()+","+getTime()+","+latitude+","+longitude+","+user;
 	}
 
 	public String getType() {
@@ -112,6 +116,14 @@ public class Location {
 	public void setType(String type) {
 		this.type = type;
 	}
+	public String getUser() {
+		return user;
+	}
+
+	public void setUser(String user) {
+		this.user = user;
+	}
+
 	
 	public void toJSON(JSONWriter writer) throws JSONException {
 		writer.key("type");
