@@ -23,7 +23,27 @@
 		<servlet-name>Update</servlet-name>
 		<url-pattern>/update</url-pattern>
 	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>UpdateTwitter</servlet-name>
+		<servlet-class>org.schtief.twitter.TwitterUpdateServlet</servlet-class>
+	</servlet>
 	
+	<servlet-mapping>
+		<servlet-name>UpdateTwitter</servlet-name>
+		<url-pattern>/updatetwitter</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>TwitterTest</servlet-name>
+		<servlet-class>org.schtief.twitter.TwitterTestServlet</servlet-class>
+	</servlet>
+	
+	<servlet-mapping>
+		<servlet-name>TwitterTest</servlet-name>
+		<url-pattern>/twittertest</url-pattern>
+	</servlet-mapping>
+		
 	<welcome-file-list>
 		<welcome-file>index.html</welcome-file>
 	</welcome-file-list>
