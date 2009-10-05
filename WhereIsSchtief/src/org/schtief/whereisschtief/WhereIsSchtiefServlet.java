@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.logging.Level;
 
 import javax.jdo.PersistenceManager;
+import javax.jdo.Transaction;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -109,14 +110,13 @@ public class WhereIsSchtiefServlet extends HttpServlet {
 		PersistenceManager pm = PMF.get().getPersistenceManager();
 
 		List<Location> locations	=	LocationManager.getClusteredLocations(pm,name,startCal,endCal, 1000, 60);
-		if(null==locations || locations.size()==0)
-			return;
+
 		//write javascript+json
 		resp.setContentType("text/javascript");
 		resp.getWriter().append(callback+"(");
 		JSONWriter writer = new JSONWriter(resp.getWriter());
 		
-		if(endCal.after(Calendar.getInstance()))
+		if(endCal.after(Calendar.getInstance()) && null!=locations && locations.size()!=0)
 			locations.get(locations.size()-1).setType("actual");
 		
 		try
@@ -265,7 +265,7 @@ public class WhereIsSchtiefServlet extends HttpServlet {
 	
 		
 		PersistenceManager pm = PMF.get().getPersistenceManager();
-
+		
 		List<Location> locations	=	LocationManager.getLocations(pm,name,null,null);
 		//write javascript+json
 		resp.setContentType("text/plain");
@@ -274,6 +274,28 @@ public class WhereIsSchtiefServlet extends HttpServlet {
 			resp.getWriter().append("\n");
 		}
 		resp.getWriter().flush();
+		Transaction tx = pm.currentTransaction();
+		try{
+			// Start the transaction
+		    tx.begin();
+			for (Location location : locations) {
+				if(null==location.getUser())
+				{
+					System.out.println("user null "+location.toString());
+					location.setUser("schtief");
+//					pm.makePersistent(location);
+				}
+			}
+		    tx.commit();
+		}catch(Exception e){
+			if (tx.isActive())
+		    {
+		        tx.rollback();
+		    }
+			System.err.println("Export exception"+e.getMessage());
+		}finally {
+	        pm.close();
+	    }
 	}
 	
 	private void error(ServletResponse resp, String message) throws IOException {

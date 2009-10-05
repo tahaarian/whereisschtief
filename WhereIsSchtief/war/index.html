@@ -80,10 +80,10 @@ function createMarker(point, info, type, id ) {
         return 1; 
       } 
       
-function setDate(){
+function setUserDate(){
 	new Ajax.Request('/whereisschtief', {
 	  method: 'get',
-	  parameters: {action: 'getdata', callback: 'updateLocations', date: document.forms[0].date.value}
+	  parameters: {action: 'getdata', callback: 'updateLocations', date: document.forms[0].date.value, name: document.forms[0].user.value}
 	  });
 }
    
@@ -99,15 +99,8 @@ function listLocations(root) {
   </head>
   <body onload="load()" onunload="GUnload()">
   <center>
-  <h1>Where is Schtief!</h1>
-  <a href="http://schteif.blogspot.com/2009/09/ich-mache-meine-vorratsdatenspeicherung.html">Ich mache meine Vorratsdatenspeicherung lieber selber.</a><br/>
-  Hier findet ihr mein Bewegungsprofil der letzten 36 Stunden.<br/>
-  Ueberhalb der Karte koennt ihr auch mein Bewegungsprofil eines bestimmten <br/>
-  Tages innerhalb der letzten 3 Monate abrufen.<br/>
-  <b>Dies ist eine Provokation um zu zeigen, was alles moeglich ist,<br/>
-  denn unsere Handys sind immer ortbar.</b><br/>
-  <a href="http://www.twitter.com/mrschtief">Schtiefs Twitter</a>, <a href="http://schteif.blogspot.com">Schtiefs Blog</a>, <a href="http://www.flickr.com/photos/lischke">Schtiefs Flickr</a> <br/><br/>
-  <form><b>Where was Schtief on:</b><input id="date" name="date" type="text" value="" onChange="setDate()" /> <img alt="Calendar" onclick="new CalendarDateSelect( $(this).previous(), {year_range:10} );" src="calendar.gif" style="border:0px; cursor:pointer;" /></form>
+  <form><b>User:</b><select id="user" name="user" ><option selected>schtief</option><option>fritz</option><option>martin</option></select>
+  <input id="date" name="date" type="text" value="" onChange="setUserDate()" /><img alt="Calendar" onclick="new CalendarDateSelect( $(this).previous(), {year_range:10} );" src="calendar.gif" style="border:0px; cursor:pointer;" /><b>&lt;-- Where was Schtief on (click on Calendar icon!)</b></form>
   <div id="map" style="width:600px;height:400px"></div>
   <div id="error"></div> 
   </center>
@@ -115,11 +108,10 @@ function listLocations(root) {
   <ul><li><strike>Clustering: Verweildauer an den Orten aufsummieren </strike></li>
   <li>Integration von Twitter/Flickr und evtl. meiner Anrufdaten</li>
   <li>Ungewoehnliche Orte herausfilter und extra anzeigen.<br/>(Treffen mit Terroristen/Urlaub in Pakistan)</li>
-  <li>Multiusererweiterung & Community :-)</li>
+  <li><strike>Multiusererweiterung</strike> & Community :-)</li>
   </ul>
-
   
-<script src="/whereisschtief?action=getdata&callback=listLocations">
+<script src="/whereisschtief?action=getdata&callback=listLocations&name=schtief">
 </script>
   <script type="text/javascript">
 var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
