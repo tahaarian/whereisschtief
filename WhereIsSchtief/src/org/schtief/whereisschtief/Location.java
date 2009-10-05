@@ -12,12 +12,15 @@ import javax.jdo.annotations.PrimaryKey;
 
 import org.json.JSONException;
 import org.json.JSONWriter;
+import org.schtief.twitter.Tweet;
 
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
 public class Location {
 	
 	@NotPersistent
 	protected static SimpleDateFormat df	=	new SimpleDateFormat("dd MMM yyyy HH:mm");
+	@NotPersistent
+	protected static SimpleDateFormat df2	=	new SimpleDateFormat("HH:mm");
  	
 	@PrimaryKey
 	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
@@ -47,6 +50,8 @@ public class Location {
 	@Persistent
 	private String user;
 
+	@NotPersistent
+	protected String info="";
 
 	public Location( long time, String latitude, String longitude, int accuracy) {
 		super();
@@ -124,6 +129,13 @@ public class Location {
 		this.user = user;
 	}
 
+	public void addTweet(Tweet tweet) {
+		Calendar cal=Calendar.getInstance();
+		cal.setTimeInMillis(tweet.getTime());
+		cal.add(Calendar.HOUR, 2);
+		info+=df2.format(cal.getTime())+":"+tweet.getText()+"<br/>";
+		setType("actual");
+	}	
 	
 	public void toJSON(JSONWriter writer) throws JSONException {
 		writer.key("type");
@@ -136,7 +148,10 @@ public class Location {
 		Calendar cal=Calendar.getInstance();
 		cal.setTimeInMillis(time);
 		cal.add(Calendar.HOUR, 2);
-		writer.value(df.format(cal.getTime()));
+		if(info.length()>0)
+			writer.value(df.format(cal.getTime())+"<br/>"+info);
+		else
+			writer.value(df.format(cal.getTime()));
 		
 		writer.key("latitude");
 		if(null!=latitude)
@@ -186,5 +201,7 @@ public class Location {
 		/*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
 		private double rad2deg(double rad) {
 		  return (rad * 180.0 / Math.PI);
-		}	
+		}
+
+
 }
