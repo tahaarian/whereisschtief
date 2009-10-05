@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<datastore-indexes
+  autoGenerate="false">
+
+    <datastore-index kind="Tweet" ancestor="false">
+        <property name="user" direction="asc"/>
+        <property name="time" direction="asc"/>
+    </datastore-index>
+    
+    <datastore-index kind="Tweet" ancestor="false">
+        <property name="user" direction="desc" />
+        <property name="time" direction="asc" />
+    </datastore-index>
+
+    <datastore-index kind="Tweet" ancestor="false">
+        <property name="user" direction="desc" />
+        <property name="time" direction="desc" />
+    </datastore-index>
+  
+    <datastore-index kind="Location" ancestor="false">
+        <property name="time" direction="asc" />
+        <property name="user" direction="asc" />
+    </datastore-index>
+
+    <datastore-index kind="Location" ancestor="false">
+        <property name="user" direction="asc" />
+        <property name="time" direction="asc" />
+    </datastore-index>
+
+    <datastore-index kind="Location" ancestor="false">
+        <property name="user" direction="asc" />
+        <property name="time" direction="desc" />
+    </datastore-index>
+
+    <datastore-index kind="Location" ancestor="false">
+        <property name="user" direction="desc" />
+        <property name="time" direction="desc" />
+    </datastore-index>
+
+
+</datastore-indexes>

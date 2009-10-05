@@ -5,4 +5,9 @@
     <description>Save the Google Latitude Location</description>
     <schedule>every 1 minutes</schedule>
   </cron>
-</cronentries>
+  <cron>
+    <url>/updatetwitter</url>
+    <description>Save the latest tweets</description>
+    <schedule>every 2 minutes</schedule>
+  </cron>
+  </cronentries>
