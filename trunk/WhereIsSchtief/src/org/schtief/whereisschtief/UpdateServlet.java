@@ -16,6 +16,8 @@ public class UpdateServlet extends HttpServlet {
 	@SuppressWarnings("unchecked")
 	public void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws IOException {
+		System.out.println("UpdateServlet");
+
 		//loop over all users
 		PersistenceManager pm = PMF.get().getPersistenceManager();
 		try{
@@ -46,7 +48,7 @@ public class UpdateServlet extends HttpServlet {
         			else
         			{
                     	resp.getWriter().println("ignored");
-                    	System.out.println("Update ignored :"+location.toString());
+//                    	System.out.println("Update ignored :"+location.toString());
         			}
         		}
         		else

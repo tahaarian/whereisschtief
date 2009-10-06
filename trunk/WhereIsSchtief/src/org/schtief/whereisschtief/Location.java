@@ -1,7 +1,9 @@
 package org.schtief.whereisschtief;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
@@ -19,8 +21,6 @@ public class Location {
 	
 	@NotPersistent
 	protected static SimpleDateFormat df	=	new SimpleDateFormat("dd MMM yyyy HH:mm");
-	@NotPersistent
-	protected static SimpleDateFormat df2	=	new SimpleDateFormat("HH:mm");
  	
 	@PrimaryKey
 	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
@@ -51,7 +51,7 @@ public class Location {
 	private String user;
 
 	@NotPersistent
-	protected String info="";
+	protected List<Tweet> tweets;
 
 	public Location( long time, String latitude, String longitude, int accuracy) {
 		super();
@@ -130,10 +130,9 @@ public class Location {
 	}
 
 	public void addTweet(Tweet tweet) {
-		Calendar cal=Calendar.getInstance();
-		cal.setTimeInMillis(tweet.getTime());
-		cal.add(Calendar.HOUR, 2);
-		info+=df2.format(cal.getTime())+":"+tweet.getText()+"<br/>";
+		if(null==tweets)
+			tweets=new ArrayList<Tweet>();
+		tweets.add(tweet);
 		setType("actual");
 	}	
 	
@@ -148,11 +147,20 @@ public class Location {
 		Calendar cal=Calendar.getInstance();
 		cal.setTimeInMillis(time);
 		cal.add(Calendar.HOUR, 2);
-		if(info.length()>0)
-			writer.value(df.format(cal.getTime())+"<br/>"+info);
-		else
-			writer.value(df.format(cal.getTime()));
-		
+		writer.value(df.format(cal.getTime()));
+
+		writer.key("tweets");
+		writer.array();
+		if(null!=tweets)
+		{
+			for (Tweet tweet : tweets) {
+				writer.object();
+				tweet.toJSON(writer);
+				writer.endObject();
+			}
+		}
+		writer.endArray();
+			
 		writer.key("latitude");
 		if(null!=latitude)
 			writer.value(latitude);

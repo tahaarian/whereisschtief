@@ -114,36 +114,51 @@ public class WhereIsSchtiefServlet extends HttpServlet {
 
 		List<Location> locations	=	LocationManager.getClusteredLocations(pm,name,startCal,endCal, 1000, 60);
 		List<Tweet> tweets	=	TweetManager.getTweets(pm, null, startCal, endCal);
-		
+
 		if(locations.size()>0 && tweets.size()>0)
 		{
 			Iterator<Location> itL = locations.iterator();
-			Location lastLocation	=	itL.next();
-			Location location	=	null;
-			if(itL.hasNext())
-			{
-				location=itL.next();
+			Location location	=	itL.next();
+			int itC	=1;
+			Location lastLocation	=	null;
 				for (Tweet tweet : tweets) {
 					//TODO use name in query with index
 					if(!name.equals(tweet.getUser()))
 						continue;
-					if(tweet.getTime()<lastLocation.getTime())
+//					if(tweet.getTime()<lastLocation.getTime())
+//						continue;
+					System.out.println(tweet.toString());
+					if(null==lastLocation && tweet.getTime()<location.getTime())
+					{
+						location.addTweet(tweet);
+						System.out.println("added to first location! "+itC);
 						continue;
+					}
+					
 					//wenn tweet after location next location
-					if(tweet.getTime()>location.getTime() && itL.hasNext())
+					//achtung sonderfall solange locations vorspulen bis !itl.hasNext() oder tweet.getTime()<location.getTime()
+					while(tweet.getTime()>location.getTime() && itL.hasNext())
 					{
 						lastLocation=location;
 						location=itL.next();
+						itC++;
+						System.out.println("next location! "+itC);
 						continue;
 					}
+
 					//naeheste Location zu diesem tweet finden
 					if(Math.abs(tweet.getTime()-lastLocation.getTime())<=Math.abs(tweet.getTime()-location.getTime()))
+					{
 						lastLocation.addTweet(tweet);
+						System.out.println("added to lastLocation! "+itC);
+					}
 					else
+					{
+						System.out.println("added to location! "+itC);
 						location.addTweet(tweet);
+					}
 				}
-			}
-		}		
+			}		
 		//write javascript+json
 		resp.setContentType("text/javascript");
 		resp.getWriter().append(callback+"(");
@@ -168,8 +183,9 @@ public class WhereIsSchtiefServlet extends HttpServlet {
 		}
 		catch(JSONException je)
 		{
-			je.printStackTrace();
-			error(resp,"could not write JSON");
+			throw new RuntimeException(je);
+//			je.printStackTrace();
+//			error(resp,"could not write JSON");
 		}
 		
 	}
@@ -282,6 +298,7 @@ public class WhereIsSchtiefServlet extends HttpServlet {
 			}
 			writer.endArray();
 			writer.endObject();
+			System.out.println(writer.toString());
 			resp.getWriter().append(");");
 		}
 		catch(JSONException je)
@@ -330,6 +347,7 @@ public class WhereIsSchtiefServlet extends HttpServlet {
 		    {
 		        tx.rollback();
 		    }
+			e.printStackTrace();
 			System.err.println("Export exception"+e.getMessage());
 		}finally {
 	        pm.close();
@@ -337,6 +355,7 @@ public class WhereIsSchtiefServlet extends HttpServlet {
 	}
 	
 	private void error(ServletResponse resp, String message) throws IOException {
+		resp.reset();
 		resp.setContentType("text/plain");
 		resp.getWriter().println(message);
 	}
@@ -344,6 +363,6 @@ public class WhereIsSchtiefServlet extends HttpServlet {
 	private static void log(Level level, Object log) 
 	{
 		//TODO fucking logging in google app engine
-		System.out.println(log.toString());
+//		System.out.println(log.toString());
 	}
 }

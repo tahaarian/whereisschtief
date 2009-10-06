@@ -6,6 +6,8 @@ import java.util.List;
 
 import javax.jdo.PersistenceManager;
 
+import org.schtief.twitter.Tweet;
+
 public class LocationManager 
 {
 
@@ -46,8 +48,9 @@ public class LocationManager
 		jdoql.append(" ORDER BY time ASC");
 
 //		String jdoql = "SELECT FROM " + Location.class.getName()+" WHERE time >= "+fromDate.getTimeInMillis()+" && time <= "+toDate.getTimeInMillis()+" ORDER BY time DESC";
-		System.out.println("JDOQL: "+jdoql);
-		return (List<Location>) pm.newQuery(jdoql.toString()).execute();
+		List<Location> result = (List<Location>) pm.newQuery(jdoql.toString()).execute();
+		System.out.println("getLocations #"+result.size()+" jdoql : "+jdoql);
+		return result;
 	}
 
 	public static List<Location> getClusteredLocations(PersistenceManager pm, String name, Calendar fromDate, Calendar toDate, double thresholdRadius, int thresholdMinutes)
@@ -76,20 +79,20 @@ public class LocationManager
 			//wenn abstand zum Cluster < thresholdRadius
 			if(cluster.distance(location)<=thresholdRadius)
 			{
-				System.out.println("Cluster Distance ok ADD : "+cluster.distance(location));
+//				System.out.println("Cluster Distance ok ADD : "+cluster.distance(location));
 				//zum cluster hinzufügen
 				cluster.add(location);
 				//continue
 			}
 			else //wenn abstand zum Cluster > thresholdRadius
 			{
-				System.out.println("Cluster Distance not ok : "+cluster.distance(location));
+//				System.out.println("Cluster Distance not ok : "+cluster.distance(location));
 
 				//calc LocationT-startT
 				//if dt > thresholdMinutes
 				if((location.getTime()-cluster.getTime())/(1000*60)>=thresholdMinutes)
 				{
-					System.out.println("Cluster sum time OK "+((location.getTime()-cluster.getTime())/(1000*60)));
+//					System.out.println("Cluster sum time OK "+((location.getTime()-cluster.getTime())/(1000*60)));
 					//set last time
 					cluster.setLastTime(location.getTime());
 					//calc center add to List
@@ -97,7 +100,7 @@ public class LocationManager
 				}
 				else //if dt < thresholdMinutes
 				{
-					System.out.println("Cluster sum time not OK "+((location.getTime()-cluster.getTime())/(1000*60)));
+//					System.out.println("Cluster sum time not OK "+((location.getTime()-cluster.getTime())/(1000*60)));
 
 					//add whole cluster Members to List
 					result.addAll(cluster.getMembers());
@@ -112,13 +115,13 @@ public class LocationManager
 		//if dt > thresholdMinutes
 		if((locations.get(locations.size()-1).getTime()-cluster.getTime())/(1000*60)>=thresholdMinutes)
 		{
-			System.out.println("Last Cluster sum time OK "+((locations.get(locations.size()-1).getTime()-cluster.getTime())/(1000*60)));
+//			System.out.println("Last Cluster sum time OK "+((locations.get(locations.size()-1).getTime()-cluster.getTime())/(1000*60)));
 			//calc center add to List
 			result.add(cluster);
 		}
 		else //if dt < thresholdMinutes
 		{
-			System.out.println("Last Cluster sum time not OK "+((locations.get(locations.size()-1).getTime()-cluster.getTime())/(1000*60)));
+//			System.out.println("Last Cluster sum time not OK "+((locations.get(locations.size()-1).getTime()-cluster.getTime())/(1000*60)));
 
 			//add whole cluster Members to List
 			result.addAll(cluster.getMembers());

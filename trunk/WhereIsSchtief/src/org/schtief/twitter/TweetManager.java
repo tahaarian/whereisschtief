@@ -46,7 +46,8 @@ public class TweetManager
 		jdoql.append(" ORDER BY time ASC");
 
 //		String jdoql = "SELECT FROM " + Location.class.getName()+" WHERE time >= "+fromDate.getTimeInMillis()+" && time <= "+toDate.getTimeInMillis()+" ORDER BY time DESC";
-		System.out.println("JDOQL: "+jdoql);
-		return (List<Tweet>) pm.newQuery(jdoql.toString()).execute();
+		List<Tweet> result = (List<Tweet>) pm.newQuery(jdoql.toString()).execute();
+		System.out.println("getTweets #"+result.size()+" jdoql : "+jdoql);
+		return result;
 	}	
 }
