@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.json.JSONException;
 import org.json.JSONWriter;
+import org.schtief.twitter.Tweet;
 
 public class Cluster extends Location {
 	private List<Location> members;
@@ -80,10 +81,19 @@ public class Cluster extends Location {
 		else
 			durationS	=	duration+"mins";
 
-		if(info.length()>0)
-			writer.value(df.format(cal.getTime())+"<br/>"+(null==lastTime ?"till now":df.format(endCal.getTime())+"<br/>")+"="+durationS+"<br/>"+info);
-		else
-			writer.value(df.format(cal.getTime())+"<br/>"+(null==lastTime ?"till now":df.format(endCal.getTime())+"<br/>")+"="+durationS);
+		writer.value(df.format(cal.getTime())+" -&gt; "+(null==lastTime ?"till now":df.format(endCal.getTime()))+" = "+durationS);
+		
+		writer.key("tweets");
+		writer.array();
+		if(null!=tweets)
+		{
+			for (Tweet tweet : tweets) {
+				writer.object();
+				tweet.toJSON(writer);
+				writer.endObject();
+			}
+		}
+		writer.endArray();
 		
 		double latSum	=	0;
 		double lonSum	=	0;

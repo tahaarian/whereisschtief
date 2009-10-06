@@ -22,7 +22,7 @@ public class TwitterUpdateServlet extends HttpServlet {
 	@SuppressWarnings("unchecked")
 	public void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws IOException {
-
+		System.out.println("TwitterUpdateServlet");
 		PersistenceManager pm = PMF.get().getPersistenceManager();
 
 		//get last saved tweet id
@@ -53,7 +53,7 @@ public class TwitterUpdateServlet extends HttpServlet {
 				else
 				{
 	            	resp.getWriter().println("ignored "+status.getId());
-	            	System.out.println("ignored :"+status.getId());
+//	            	System.out.println("ignored :"+status.getId());
 				}
 			}
 		}finally {

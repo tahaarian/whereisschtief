@@ -1,11 +1,17 @@
 package org.schtief.twitter;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
+import javax.jdo.annotations.NotPersistent;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
+import org.json.JSONException;
+import org.json.JSONWriter;
 import org.schtief.twitter.Twitter.Status;
 
 import com.google.appengine.api.datastore.Key;
@@ -13,7 +19,8 @@ import com.google.appengine.api.datastore.KeyFactory;
 
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
 public class Tweet {
-	
+	@NotPersistent
+	protected static SimpleDateFormat df	=	new SimpleDateFormat("HH:mm");
 	@PrimaryKey
 	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
 	private Long id;
@@ -77,5 +84,19 @@ public class Tweet {
 
 	public void setUser(String user) {
 		this.user = user;
+	}
+
+	public void toJSON(JSONWriter writer) throws JSONException {
+		writer.key("id");
+		writer.value(twitterId);
+		writer.key("user");
+		writer.value(user);
+		writer.key("time");
+		Calendar cal=Calendar.getInstance();
+		cal.setTimeInMillis(time);
+		cal.add(Calendar.HOUR, 2);
+		writer.value(df.format(cal.getTime()));
+		writer.key("text");
+		writer.value(text);
 	}
 }
