@@ -36,18 +36,19 @@ function update(){
 		try{
 			var entry = entries[i];
 			var info = entry['info'];
+			var tweets = entry['tweets'];
 			var type = entry['type'];
 			var lon =  entry['latitude'];	
 			var lat =  entry['longitude'];
-				if(null==latestPos){
+			if(null==latestPos){
 
-				}
-				else{
-					var polyline = new GPolyline([latestPos,new GLatLng(lat, lon)], "#aa0000", 5);
-					map.addOverlay(polyline);
-				}
-				latestPos = new GLatLng(lat, lon);
-				map.addOverlay(createMarker(latestPos, info, type, i));  
+			}
+			else{
+				var polyline = new GPolyline([latestPos,new GLatLng(lat, lon)], "#aa0000", 5);
+				map.addOverlay(polyline);
+			}
+			latestPos = new GLatLng(lat, lon);
+			map.addOverlay(createMarker(latestPos, info, type, i, tweets));  
 		}catch(e){
 			error += e.name+" : "+ e.message;
 			document.getElementById("error").innerHTML =error;
@@ -56,7 +57,7 @@ function update(){
 	}
 }
 
-function createMarker(point, info, type, id ) {
+function createMarker(point, info, type, id, tweets) {
 	id=id+1;
 	var icon;
 
@@ -70,11 +71,39 @@ function createMarker(point, info, type, id ) {
 		icon = new GIcon(G_DEFAULT_ICON,"http://chart.apis.google.com/chart?chst=d_map_xpin_icon&chld=pin_star|home|00FFFF|FF0000");
 	
 	var marker = new GMarker(point, {icon:icon, zIndexProcess:orderOfCreation});
+	var tweetInfo="";
+	if(tweets.length>3){
+		for (var t = 0; t < tweets.length; t++) {
+			tweetInfo=tweetInfo+"<a href='http://twitter.com/"+tweets[t].user+"/status/"+tweets[t].id+"' target='_twitter'>"+tweets[t].time+"</a>";
+			if(t+1<tweets.length)
+				tweetInfo=tweetInfo+",&nbsp;";
+		}
+	}
+	else{
+		for (var t = 0; t < tweets.length; t++) {
+			tweetInfo=tweetInfo+"<a href='http://twitter.com/"+tweets[t].user+"/status/"+tweets[t].id+"' target='_twitter'>"+tweets[t].time+"</a>&nbsp;"+breakString(tweets[t].text,60);
+			if(t+1<tweets.length)
+				tweetInfo=tweetInfo+"<br/>";
+		}
+	}
+	
+	if(tweetInfo.length>0)
+	 tweetInfo="<div style='font-size:12px;font-family:arial'>"+tweetInfo+"</div>";
+	
 	GEvent.addListener(marker, "mouseover", function() {
-		marker.openInfoWindowHtml("<b>" + info + "</b>");
+		marker.openInfoWindowHtml("<div style='font-size:12px;font-family:arial;font-weight:bold'>" + info + "</div>"+tweetInfo);
 	});    
   	return marker;
 }
+
+      function breakString(s,len){
+      	var res=s;
+      	if(s.length>len){
+      		res=s.substr(0,len);
+      		res=res+"<br/>"+s.substr(len);
+      	}
+      	return res;
+      }
 
       function orderOfCreation(marker,b) { 
         return 1; 
@@ -106,7 +135,7 @@ function listLocations(root) {
   </center>
   TODOS:<br/>
   <ul><li><strike>Clustering: Verweildauer an den Orten aufsummieren </strike></li>
-  <li>Integration von Twitter/Flickr und evtl. meiner Anrufdaten</li>
+  <li><strike>Integration von Twitter</strike>/Flickr und evtl. meiner Anrufdaten</li>
   <li>Ungewoehnliche Orte herausfilter und extra anzeigen.<br/>(Treffen mit Terroristen/Urlaub in Pakistan)</li>
   <li><strike>Multiusererweiterung</strike> & Community :-)</li>
   </ul>
