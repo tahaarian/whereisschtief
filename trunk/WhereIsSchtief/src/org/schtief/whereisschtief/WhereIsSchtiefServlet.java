@@ -316,11 +316,47 @@ public class WhereIsSchtiefServlet extends HttpServlet {
 		
 		PersistenceManager pm = PMF.get().getPersistenceManager();
 		
-		List<Location> locations	=	LocationManager.getLocations(pm,name,null,null);
+//		List<Location> locations	=	LocationManager.getLocations(pm,name,null,null);
+//		//write javascript+json
+//		resp.setContentType("text/plain");
+//		for (Location location : locations) {
+//			resp.getWriter().append(location.toCSV());
+//			resp.getWriter().append("\n");
+//		}
+//		resp.getWriter().flush();
+//		Transaction tx = pm.currentTransaction();
+//		try{
+//			// Start the transaction
+//		    tx.begin();
+//			for (Location location : locations) {
+//				if("schtief".equals(location.getUser()))
+//				{
+//					location.setUser("mrschtief");
+////					pm.makePersistent(location);
+//				}
+//				if("martin".equals(location.getUser()))
+//				{
+//					location.setUser("plomlompom");
+////					pm.makePersistent(location);
+//				}
+//
+//			}
+//		    tx.commit();
+//		}catch(Exception e){
+//			if (tx.isActive())
+//		    {
+//		        tx.rollback();
+//		    }
+//			e.printStackTrace();
+//			System.err.println("Export exception"+e.getMessage());
+//		}finally {
+//	        pm.close();
+//	    }
+		List<User> users=	UserManager.listUsers(pm);
 		//write javascript+json
 		resp.setContentType("text/plain");
-		for (Location location : locations) {
-			resp.getWriter().append(location.toCSV());
+		for (User user : users) {
+			resp.getWriter().append(user.toCSV());
 			resp.getWriter().append("\n");
 		}
 		resp.getWriter().flush();
@@ -328,16 +364,14 @@ public class WhereIsSchtiefServlet extends HttpServlet {
 		try{
 			// Start the transaction
 		    tx.begin();
-			for (Location location : locations) {
-				if("schtief".equals(location.getUser()))
+		    for (User user : users) {
+				if("mrschtief".equals(user.getName()))
 				{
-					location.setUser("mrschtief");
-//					pm.makePersistent(location);
+					user.setFlickrName(".schtieF");
 				}
-				if("martin".equals(location.getUser()))
+				if("plomlompom".equals(user.getName()))
 				{
-					location.setUser("plomlompom");
-//					pm.makePersistent(location);
+					user.setFlickrName("plomlompom");
 				}
 
 			}

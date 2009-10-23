@@ -50,7 +50,7 @@ public class LatitudeJSONParser {
 			log(Level.FINEST, properties.getLong("timeStamp"));
 			log(Level.FINEST, properties.get("accuracyInMeters"));
 
-			Location location = new Location(properties.getLong("timeStamp")*1000,Double.toString(coordinates.getDouble(0)),Double.toString(coordinates.getDouble(1)),properties.getInt("accuracyInMeters"));
+			Location location = new Location(properties.getLong("timeStamp")*1000,Double.toString(coordinates.getDouble(0)),Double.toString(coordinates.getDouble(1)),properties.getInt("accuracyInMeters"),null);
 			return location;
 		} catch (IOException ioe) {
 			throw new LatitudeJSONParserException("Could not connect to url "

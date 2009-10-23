@@ -42,7 +42,7 @@ public class TwitterUpdateServlet extends HttpServlet {
 				if("whereisschtief".equals(status.getUser().screenName))
 					continue;
 				//check if after lastTweet
-				if(status.createdAt.getTime()>lastTweet)
+				if(status.createdAt.getTime()>lastTweet && !status.text.startsWith("@")&& !status.text.startsWith("RT"))
 				{
 					Tweet tweet	=	new Tweet(status);
 					//save it
