@@ -37,6 +37,7 @@ function update(){
 			var entry = entries[i];
 			var info = entry['info'];
 			var tweets = entry['tweets'];
+			var flickr = entry['flickr'];
 			var type = entry['type'];
 			var lon =  entry['latitude'];	
 			var lat =  entry['longitude'];
@@ -48,7 +49,7 @@ function update(){
 				map.addOverlay(polyline);
 			}
 			latestPos = new GLatLng(lat, lon);
-			map.addOverlay(createMarker(latestPos, info, type, i, tweets));  
+			map.addOverlay(createMarker(latestPos, info, type, i, tweets,flickr));  
 		}catch(e){
 			error += e.name+" : "+ e.message;
 			document.getElementById("error").innerHTML =error;
@@ -57,7 +58,7 @@ function update(){
 	}
 }
 
-function createMarker(point, info, type, id, tweets) {
+function createMarker(point, info, type, id, tweets,flickr) {
 	id=id+1;
 	var icon;
 
@@ -88,10 +89,15 @@ function createMarker(point, info, type, id, tweets) {
 	}
 	
 	if(tweetInfo.length>0)
-	 tweetInfo="<div style='font-size:12px;font-family:arial'>"+tweetInfo+"</div>";
+	  tweetInfo="<div style='font-size:12px;font-family:arial'>"+tweetInfo+"</div>";
+	
+	var flickrInfo="";
+	if (undefined != flickr){
+		flickrInfo="<div style='font-size:12px;font-family:arial'><a href='http://www.flickr.com/photos/lischke/"+flickr.id+"' target='_flickr'><img src='"+flickr.thumbnail+"' border='0'/></a></div>";
+	}
 	
 	GEvent.addListener(marker, "mouseover", function() {
-		marker.openInfoWindowHtml("<div style='font-size:12px;font-family:arial;font-weight:bold'>" + info + "</div>"+tweetInfo);
+		marker.openInfoWindowHtml("<div style='font-size:12px;font-family:arial;font-weight:bold'>" + info + "</div>"+tweetInfo+flickrInfo);
 	});    
   	return marker;
 }
@@ -128,7 +134,7 @@ function listLocations(root) {
   </head>
   <body onload="load()" onunload="GUnload()">
   <center>
-  <form><b>User:</b><select id="user" name="user" ><option selected>mrschtief</option><option>fritz</option><option>plomlompom</option></select>
+  <form><b>User:</b><select id="user" name="user" ><option selected>mrschtief</option><option>fritz</option><option>plomlompom</option><option>martinhaase</option></select>
   <input id="date" name="date" type="text" value="" onChange="setUserDate()" /><img alt="Calendar" onclick="new CalendarDateSelect( $(this).previous(), {year_range:10} );" src="calendar.gif" style="border:0px; cursor:pointer;" /><b>&lt;-- Where was Schtief on (click on Calendar icon!)</b></form>
   <div id="map" style="width:600px;height:400px"></div>
   <div id="error"></div> 
