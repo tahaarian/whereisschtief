@@ -14,7 +14,18 @@ public class User {
 	
 	@Persistent
 	private String name;
-	
+
+	@Persistent
+	private String flickrName;
+
+	public void setFlickrName(String flickrName) {
+		this.flickrName = flickrName;
+	}
+
+	public String getFlickrName() {
+		return flickrName;
+	}
+
 	@Persistent
 	private String jsonUrl;
 
@@ -40,6 +51,10 @@ public class User {
 	@Override
 	public String toString() {
 		return "Id: "+getId()+", Name: "+getName()+", URL: "+jsonUrl;
+	}
+
+	public CharSequence toCSV() {
+		return getId()+","+getName()+","+jsonUrl+","+flickrName;
 	}
 
 	

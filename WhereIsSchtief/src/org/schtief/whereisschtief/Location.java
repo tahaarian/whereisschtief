@@ -14,6 +14,7 @@ import javax.jdo.annotations.PrimaryKey;
 
 import org.json.JSONException;
 import org.json.JSONWriter;
+import org.schtief.flickr.Photo;
 import org.schtief.twitter.Tweet;
 
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
@@ -48,18 +49,30 @@ public class Location {
 	protected String type;
 	
 	@Persistent
-	private String user;
+	private Photo photo;
+
+	public Photo getPhoto() {
+		return photo;
+	}
+
+	public void setPhoto(Photo photo) {
+		this.photo = photo;
+	}
 
 	@NotPersistent
 	protected List<Tweet> tweets;
 
-	public Location( long time, String latitude, String longitude, int accuracy) {
+	@Persistent
+	private String user;
+	
+	public Location( long time, String latitude, String longitude, int accuracy,String user) {
 		super();
 		this.time = time;
 		this.latitude = latitude;
 		this.longitude = longitude;
 		this.accuracy	=	accuracy;
-		this.user=null;
+		this.user=user;
+		this.photo=null;
 	}
 	
 	protected Location() {
@@ -137,6 +150,9 @@ public class Location {
 	}	
 	
 	public void toJSON(JSONWriter writer) throws JSONException {
+		if(null!=photo)
+			setType("actual");
+		
 		writer.key("type");
 		if(null==type)
 			writer.value("location");
@@ -160,7 +176,15 @@ public class Location {
 			}
 		}
 		writer.endArray();
-			
+		
+		if(null!=photo)
+		{
+			writer.key("flickr");
+			writer.object();
+			photo.toJSON(writer);
+			writer.endObject();
+		}
+		
 		writer.key("latitude");
 		if(null!=latitude)
 			writer.value(latitude);

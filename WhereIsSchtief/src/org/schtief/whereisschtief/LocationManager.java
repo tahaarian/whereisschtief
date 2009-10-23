@@ -77,7 +77,8 @@ public class LocationManager
 				continue;
 			}
 			//wenn abstand zum Cluster < thresholdRadius
-			if(cluster.distance(location)<=thresholdRadius)
+			//-1 sind die flickr locations
+			if(cluster.distance(location)<=thresholdRadius && (null==location.getAccuracy()||location.getAccuracy()!=-1))
 			{
 //				System.out.println("Cluster Distance ok ADD : "+cluster.distance(location));
 				//zum cluster hinzufügen
@@ -106,8 +107,13 @@ public class LocationManager
 					result.addAll(cluster.getMembers());
 				}
 				//new cluster add Location
-				cluster	=	new Cluster(location);
-				
+				if(null==location.getAccuracy()||location.getAccuracy()!=-1)
+					cluster	=	new Cluster(location);
+				else
+				{
+					cluster	=	null;
+					result.add(location);
+				}				
 			}
 		}	
 		//cluster kann noch voll sein.
