@@ -1,4 +1,46 @@
-<!-- Indices written at Sat, 11 Jul 2009 01:11:43 UTC -->
+<!-- Indices written at Wed, 7 Oct 2009 18:53:26 UTC -->
 
-<datastore-indexes/>
+<datastore-indexes>
+
+    <datastore-index kind="Location" ancestor="false">
+        <property name="accuracy" direction="desc" />
+        <property name="time" direction="desc" />
+    </datastore-index>
+
+
+    <datastore-index kind="Tweet" ancestor="false">
+        <property name="user" direction="asc"/>
+        <property name="time" direction="asc"/>
+    </datastore-index>
+    
+    <datastore-index kind="Tweet" ancestor="false">
+        <property name="user" direction="desc" />
+        <property name="time" direction="asc" />
+    </datastore-index>
+
+    <datastore-index kind="Tweet" ancestor="false">
+        <property name="user" direction="desc" />
+        <property name="time" direction="desc" />
+    </datastore-index>
+  
+    <datastore-index kind="Location" ancestor="false">
+        <property name="time" direction="asc" />
+        <property name="user" direction="asc" />
+    </datastore-index>
+
+    <datastore-index kind="Location" ancestor="false">
+        <property name="user" direction="asc" />
+        <property name="time" direction="asc" />
+    </datastore-index>
+
+    <datastore-index kind="Location" ancestor="false">
+        <property name="user" direction="asc" />
+        <property name="time" direction="desc" />
+    </datastore-index>
+
+    <datastore-index kind="Location" ancestor="false">
+        <property name="user" direction="desc" />
+        <property name="time" direction="desc" />
+    </datastore-index>
+</datastore-indexes>
 
